@@ -102,10 +102,16 @@
             // 
             this.cbxCategory.FormattingEnabled = true;
             this.cbxCategory.Items.AddRange(new object[] {
-            "Rent",
-            "Entertainment",
-            "Groceries",
-            "Other"});
+            "Income",
+            "Housing",
+            "Food",
+            "Utilities",
+            "Fitness",
+            "Investment",
+            "Transportation",
+            "Educations",
+            "Savings",
+            "Entertainment"});
             this.cbxCategory.Location = new System.Drawing.Point(94, 65);
             this.cbxCategory.Name = "cbxCategory";
             this.cbxCategory.Size = new System.Drawing.Size(205, 21);

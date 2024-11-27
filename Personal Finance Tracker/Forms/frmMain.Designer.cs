@@ -43,7 +43,7 @@
             this.dgvTransactions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTransactions.Location = new System.Drawing.Point(12, 12);
             this.dgvTransactions.Name = "dgvTransactions";
-            this.dgvTransactions.Size = new System.Drawing.Size(407, 426);
+            this.dgvTransactions.Size = new System.Drawing.Size(542, 426);
             this.dgvTransactions.TabIndex = 0;
             // 
             // btnAddTransaction
@@ -77,7 +77,7 @@
             // lblTotalIncome
             // 
             this.lblTotalIncome.AutoSize = true;
-            this.lblTotalIncome.Location = new System.Drawing.Point(250, 449);
+            this.lblTotalIncome.Location = new System.Drawing.Point(179, 449);
             this.lblTotalIncome.Name = "lblTotalIncome";
             this.lblTotalIncome.Size = new System.Drawing.Size(87, 13);
             this.lblTotalIncome.TabIndex = 4;
@@ -86,7 +86,7 @@
             // lblTotalExpenses
             // 
             this.lblTotalExpenses.AutoSize = true;
-            this.lblTotalExpenses.Location = new System.Drawing.Point(250, 478);
+            this.lblTotalExpenses.Location = new System.Drawing.Point(179, 478);
             this.lblTotalExpenses.Name = "lblTotalExpenses";
             this.lblTotalExpenses.Size = new System.Drawing.Size(98, 13);
             this.lblTotalExpenses.TabIndex = 5;
@@ -95,7 +95,7 @@
             // lblBalance
             // 
             this.lblBalance.AutoSize = true;
-            this.lblBalance.Location = new System.Drawing.Point(250, 507);
+            this.lblBalance.Location = new System.Drawing.Point(179, 507);
             this.lblBalance.Name = "lblBalance";
             this.lblBalance.Size = new System.Drawing.Size(64, 13);
             this.lblBalance.TabIndex = 6;
@@ -105,7 +105,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(432, 536);
+            this.ClientSize = new System.Drawing.Size(566, 536);
             this.Controls.Add(this.lblBalance);
             this.Controls.Add(this.lblTotalExpenses);
             this.Controls.Add(this.lblTotalIncome);

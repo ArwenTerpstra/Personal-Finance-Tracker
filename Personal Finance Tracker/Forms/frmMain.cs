@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using Personal_Finance_Tracker.Models;
 using Personal_Finance_Tracker.Forms;
+using System.IO;
+using System.Text.Json;
 
 namespace Personal_Finance_Tracker
 {
-    // Comment to test github...
     public partial class frmMain : Form
     {
         private List<Transaction> transactions = new List<Transaction>();
+        private string dataFilePath = "transactions.json";
 
         public frmMain()
         {
@@ -17,7 +19,9 @@ namespace Personal_Finance_Tracker
 
         private void frmMain_Load(object sender, System.EventArgs e)
         {
-
+            LoadTransactions();
+            RefreshDataGrid();
+            UpdateSummary();
         }
 
         private void btnAddTransaction_Click(object sender, System.EventArgs e)
@@ -26,6 +30,7 @@ namespace Personal_Finance_Tracker
             if (frmAddTransaction.ShowDialog() == DialogResult.OK)
             {
                 transactions.Add(frmAddTransaction.NewTransaction);
+                SaveTransactions();
                 RefreshDataGrid();
                 UpdateSummary();
             }
@@ -56,6 +61,37 @@ namespace Personal_Finance_Tracker
             lblTotalIncome.Text = $"Total Income: ${totalIncome}";
             lblTotalExpenses.Text = $"Total Expenses: ${totalExpenses}";
             lblBalance.Text = $"Balance: ${totalIncome - totalExpenses}";
+        }
+
+        private void SaveTransactions()
+        {
+            try
+            {
+                string json = JsonSerializer.Serialize(transactions, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(dataFilePath, json);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"Failed to save transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadTransactions() 
+        {
+            try 
+            {
+                if (File.Exists(dataFilePath))
+                {
+                    string json = File.ReadAllText(dataFilePath);
+                    transactions = JsonSerializer.Deserialize<List<Transaction>>(json) ?? new List<Transaction>();
+
+                }
+            }
+            catch (IOException ex) 
+            {
+                MessageBox.Show($"Failed to load transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                transactions = new List<Transaction>();
+            }
         }
     }
 }

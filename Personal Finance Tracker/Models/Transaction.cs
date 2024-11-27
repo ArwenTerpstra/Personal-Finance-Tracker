@@ -8,6 +8,6 @@ namespace Personal_Finance_Tracker.Models
         public string Description { get; set; }
         public double Amount { get; set; }
         public string Category { get; set; }
-        public bool IsIncome => Amount >= 0;
+        public bool IsIncome { get; set; }
     }
 }
