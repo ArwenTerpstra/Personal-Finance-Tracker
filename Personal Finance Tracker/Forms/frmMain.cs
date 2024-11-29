@@ -4,6 +4,8 @@ using Personal_Finance_Tracker.Models;
 using Personal_Finance_Tracker.Forms;
 using System.IO;
 using System.Text.Json;
+using System.Linq;
+using System;
 
 namespace Personal_Finance_Tracker
 {
@@ -58,8 +60,8 @@ namespace Personal_Finance_Tracker
                 }
             }
 
-            lblTotalIncome.Text = $"Total Income: ${totalIncome}";
-            lblTotalExpenses.Text = $"Total Expenses: ${totalExpenses}";
+            lblTotalIncome.Text = $"Income: ${totalIncome}";
+            lblTotalExpenses.Text = $"Expenses: ${totalExpenses}";
             lblBalance.Text = $"Balance: ${totalIncome - totalExpenses}";
         }
 
@@ -92,6 +94,83 @@ namespace Personal_Finance_Tracker
                 MessageBox.Show($"Failed to load transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 transactions = new List<Transaction>();
             }
+        }
+
+        private void ApplyFilters()
+        {
+            var filteredTransactions = transactions;
+
+            if (dtpFromDate.Value <= dtpToDate.Value)
+            {
+                filteredTransactions = filteredTransactions
+                    .Where(t => t.Date >= dtpFromDate.Value && t.Date <= dtpToDate.Value)
+                    .ToList();
+            }
+
+            if (cbxFilterCategory.SelectedItem != null && cbxFilterCategory.SelectedItem.ToString() != "All")
+            {
+                filteredTransactions = filteredTransactions
+                    .Where(t => t.Category == cbxFilterCategory.SelectedItem.ToString())
+                    .ToList();
+            }
+
+            if (chbShowIncomeOnly.Checked)
+            { 
+                filteredTransactions = filteredTransactions
+                    .Where(t => t.IsIncome)
+                    .ToList();
+            }
+            else if (chbShowExpensesOnly.Checked)
+            {
+                filteredTransactions = filteredTransactions
+                    .Where(t => !t.IsIncome)
+                    .ToList();
+            }
+
+            dgvTransactions.DataSource = null;
+            dgvTransactions.DataSource = filteredTransactions;
+        }
+
+        private void chbShowIncomeOnly_CheckedChanged(object sender, System.EventArgs e)
+        {
+            if (chbShowIncomeOnly.Checked)
+            {
+                chbShowExpensesOnly.Checked = false;
+            }
+            ApplyFilters();
+        }
+        private void chbShowExpensesOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chbShowExpensesOnly.Checked)
+            {
+                chbShowIncomeOnly.Checked = false;
+            }
+            ApplyFilters();
+        }
+
+        private void cbxFilterCategory_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void dtpFromDate_ValueChanged(object sender, System.EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void dtpToDate_ValueChanged(object sender, System.EventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void btnResetFilters_Click(object sender, System.EventArgs e)
+        {
+            dtpFromDate.Value = DateTime.Now.AddMonths(-12);
+            dtpToDate.Value = DateTime.Now.AddMonths(12);
+            cbxFilterCategory.SelectedIndex = 0;
+            chbShowIncomeOnly.Checked = false;
+            chbShowExpensesOnly.Checked = false;
+            ApplyFilters();
         }
     }
 }
