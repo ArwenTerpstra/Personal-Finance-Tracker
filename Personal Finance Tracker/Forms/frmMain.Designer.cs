@@ -30,8 +30,8 @@
         {
             this.dgvTransactions = new System.Windows.Forms.DataGridView();
             this.btnAddTransaction = new System.Windows.Forms.Button();
-            this.btnSaveData = new System.Windows.Forms.Button();
-            this.btnLoadData = new System.Windows.Forms.Button();
+            this.btnSaveAs = new System.Windows.Forms.Button();
+            this.btnOpenFile = new System.Windows.Forms.Button();
             this.lblTotalIncome = new System.Windows.Forms.Label();
             this.lblTotalExpenses = new System.Windows.Forms.Label();
             this.lblBalance = new System.Windows.Forms.Label();
@@ -49,6 +49,9 @@
             this.cbxSortBy = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.chkSortAscending = new System.Windows.Forms.CheckBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.btnSetBudget = new System.Windows.Forms.Button();
+            this.lblBudgetStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTransactions)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -72,23 +75,25 @@
             this.btnAddTransaction.UseVisualStyleBackColor = true;
             this.btnAddTransaction.Click += new System.EventHandler(this.btnAddTransaction_Click);
             // 
-            // btnSaveData
+            // btnSaveAs
             // 
-            this.btnSaveData.Location = new System.Drawing.Point(12, 473);
-            this.btnSaveData.Name = "btnSaveData";
-            this.btnSaveData.Size = new System.Drawing.Size(99, 23);
-            this.btnSaveData.TabIndex = 2;
-            this.btnSaveData.Text = "Save Data";
-            this.btnSaveData.UseVisualStyleBackColor = true;
+            this.btnSaveAs.Location = new System.Drawing.Point(12, 473);
+            this.btnSaveAs.Name = "btnSaveAs";
+            this.btnSaveAs.Size = new System.Drawing.Size(99, 23);
+            this.btnSaveAs.TabIndex = 2;
+            this.btnSaveAs.Text = "Save As";
+            this.btnSaveAs.UseVisualStyleBackColor = true;
+            this.btnSaveAs.Click += new System.EventHandler(this.btnSaveAs_Click);
             // 
-            // btnLoadData
+            // btnOpenFile
             // 
-            this.btnLoadData.Location = new System.Drawing.Point(12, 502);
-            this.btnLoadData.Name = "btnLoadData";
-            this.btnLoadData.Size = new System.Drawing.Size(99, 23);
-            this.btnLoadData.TabIndex = 3;
-            this.btnLoadData.Text = "Load Data";
-            this.btnLoadData.UseVisualStyleBackColor = true;
+            this.btnOpenFile.Location = new System.Drawing.Point(12, 502);
+            this.btnOpenFile.Name = "btnOpenFile";
+            this.btnOpenFile.Size = new System.Drawing.Size(99, 23);
+            this.btnOpenFile.TabIndex = 3;
+            this.btnOpenFile.Text = "Open File";
+            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // lblTotalIncome
             // 
@@ -111,7 +116,7 @@
             // lblBalance
             // 
             this.lblBalance.AutoSize = true;
-            this.lblBalance.Location = new System.Drawing.Point(6, 101);
+            this.lblBalance.Location = new System.Drawing.Point(6, 96);
             this.lblBalance.Name = "lblBalance";
             this.lblBalance.Size = new System.Drawing.Size(64, 13);
             this.lblBalance.TabIndex = 6;
@@ -239,7 +244,7 @@
             this.groupBox3.Controls.Add(this.lblTotalIncome);
             this.groupBox3.Location = new System.Drawing.Point(12, 531);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(99, 125);
+            this.groupBox3.Size = new System.Drawing.Size(99, 119);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Total";
@@ -256,6 +261,7 @@
             this.cbxSortBy.Name = "cbxSortBy";
             this.cbxSortBy.Size = new System.Drawing.Size(167, 21);
             this.cbxSortBy.TabIndex = 0;
+            this.cbxSortBy.Text = "None";
             this.cbxSortBy.SelectedIndexChanged += new System.EventHandler(this.cbxSortBy_SelectedIndexChanged);
             // 
             // label4
@@ -278,22 +284,47 @@
             this.chkSortAscending.UseVisualStyleBackColor = true;
             this.chkSortAscending.CheckedChanged += new System.EventHandler(this.chkSortAscending_CheckedChanged);
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // btnSetBudget
+            // 
+            this.btnSetBudget.Location = new System.Drawing.Point(375, 627);
+            this.btnSetBudget.Name = "btnSetBudget";
+            this.btnSetBudget.Size = new System.Drawing.Size(167, 23);
+            this.btnSetBudget.TabIndex = 9;
+            this.btnSetBudget.Text = "Set Budget";
+            this.btnSetBudget.UseVisualStyleBackColor = true;
+            this.btnSetBudget.Click += new System.EventHandler(this.btnSetBudget_Click);
+            // 
+            // lblBudgetStatus
+            // 
+            this.lblBudgetStatus.AutoSize = true;
+            this.lblBudgetStatus.Location = new System.Drawing.Point(372, 578);
+            this.lblBudgetStatus.Name = "lblBudgetStatus";
+            this.lblBudgetStatus.Size = new System.Drawing.Size(74, 13);
+            this.lblBudgetStatus.TabIndex = 10;
+            this.lblBudgetStatus.Text = "Budget Status";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(566, 668);
+            this.Controls.Add(this.lblBudgetStatus);
+            this.Controls.Add(this.btnSetBudget);
             this.Controls.Add(this.chkSortAscending);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.cbxSortBy);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnLoadData);
-            this.Controls.Add(this.btnSaveData);
+            this.Controls.Add(this.btnOpenFile);
+            this.Controls.Add(this.btnSaveAs);
             this.Controls.Add(this.btnAddTransaction);
             this.Controls.Add(this.dgvTransactions);
             this.Name = "frmMain";
-            this.Text = "Finance Tracker";
+            this.Text = "Personal Finance Tracker";
             this.Load += new System.EventHandler(this.frmMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvTransactions)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -309,8 +340,8 @@
 
         private System.Windows.Forms.DataGridView dgvTransactions;
         private System.Windows.Forms.Button btnAddTransaction;
-        private System.Windows.Forms.Button btnSaveData;
-        private System.Windows.Forms.Button btnLoadData;
+        private System.Windows.Forms.Button btnSaveAs;
+        private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.Label lblTotalIncome;
         private System.Windows.Forms.Label lblTotalExpenses;
         private System.Windows.Forms.Label lblBalance;
@@ -328,6 +359,9 @@
         private System.Windows.Forms.ComboBox cbxSortBy;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox chkSortAscending;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button btnSetBudget;
+        private System.Windows.Forms.Label lblBudgetStatus;
     }
 }
 

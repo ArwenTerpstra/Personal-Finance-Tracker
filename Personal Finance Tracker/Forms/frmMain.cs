@@ -6,13 +6,14 @@ using System.IO;
 using System.Text.Json;
 using System.Linq;
 using System;
+using System.Drawing;
 
 namespace Personal_Finance_Tracker
 {
     public partial class frmMain : Form
     {
         private List<Transaction> transactions = new List<Transaction>();
-        private string dataFilePath = "transactions.json";
+        private Budget userBudget = new Budget { MonthlyBudget = 0, CurrentExpenses = 0 };
 
         public frmMain()
         {
@@ -21,7 +22,13 @@ namespace Personal_Finance_Tracker
 
         private void frmMain_Load(object sender, System.EventArgs e)
         {
-            LoadTransactions();
+            string lastUsedFilePath = Properties.Settings.Default.LastUsedFilePath;
+
+            if (lastUsedFilePath != string.Empty)
+            {
+                LoadTransactions(lastUsedFilePath);
+            }
+
             RefreshDataGrid();
             UpdateSummary();
         }
@@ -32,15 +39,42 @@ namespace Personal_Finance_Tracker
             if (frmAddTransaction.ShowDialog() == DialogResult.OK)
             {
                 transactions.Add(frmAddTransaction.NewTransaction);
-                SaveTransactions();
                 RefreshDataGrid();
                 UpdateSummary();
             }
         }
+
         private void RefreshDataGrid()
         {
             dgvTransactions.DataSource = null;
             dgvTransactions.DataSource = transactions;
+        }
+
+        private void UpdateBudgetStatus()
+        {
+            if (userBudget.MonthlyBudget > 0)
+            {
+                if (userBudget.IsExceeded)
+                {
+                    lblBudgetStatus.Text = $"Budget Exceeded! Overspent by ${Math.Abs(userBudget.RemainingBudget)}";
+                    lblBudgetStatus.ForeColor = Color.Red;
+
+                    if (userBudget.IsExceeded)
+                    {
+                        MessageBox.Show("You have exceeded your monthly budget!", "Budget Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    lblBudgetStatus.Text = $"Remaining Budget: ${userBudget.RemainingBudget}";
+                    lblBudgetStatus.ForeColor = Color.Green;
+                }
+            }
+            else
+            {
+                lblBudgetStatus.Text = "No budget set.";
+                lblBudgetStatus.ForeColor = Color.Gray;
+            }
         }
 
         private void UpdateSummary()
@@ -60,17 +94,32 @@ namespace Personal_Finance_Tracker
                 }
             }
 
+            userBudget.CurrentExpenses = totalExpenses;
+
             lblTotalIncome.Text = $"Income: ${totalIncome}";
             lblTotalExpenses.Text = $"Expenses: ${totalExpenses}";
             lblBalance.Text = $"Balance: ${totalIncome - totalExpenses}";
+
+            UpdateBudgetStatus();
         }
 
-        private void SaveTransactions()
+        private void UpdateFormTitle(string filePath)
+        {
+            this.Text = $"Personal Finance Tracker - {Path.GetFileName(filePath)}";
+        }
+
+        private void SaveTransactions(string filePath)
         {
             try
             {
-                string json = JsonSerializer.Serialize(transactions, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(dataFilePath, json);
+                var saveData = new { Transactions = transactions, Budget = userBudget.MonthlyBudget };
+                string json = JsonSerializer.Serialize(saveData, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+
+                Properties.Settings.Default.LastUsedFilePath = filePath;
+                Properties.Settings.Default.Save();
+
+                MessageBox.Show("Data saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (IOException ex)
             {
@@ -78,21 +127,40 @@ namespace Personal_Finance_Tracker
             }
         }
 
-        private void LoadTransactions() 
+        private void LoadTransactions(string filePath) 
         {
-            try 
+            try
             {
-                if (File.Exists(dataFilePath))
+                if (File.Exists(filePath))
                 {
-                    string json = File.ReadAllText(dataFilePath);
-                    transactions = JsonSerializer.Deserialize<List<Transaction>>(json) ?? new List<Transaction>();
+                    string json = File.ReadAllText(filePath);
 
+                    var loadData = JsonSerializer.Deserialize<SaveData>(json);
+
+                    transactions = loadData?.Transactions ?? new List<Transaction>();
+                    userBudget.MonthlyBudget = loadData?.Budget ?? 0;
+
+                    Properties.Settings.Default.LastUsedFilePath = filePath;
+                    Properties.Settings.Default.Save();
+
+                    MessageBox.Show("Data loaded successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("File does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            catch (IOException ex) 
+            catch (IOException ex)
             {
                 MessageBox.Show($"Failed to load transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 transactions = new List<Transaction>();
+                userBudget.MonthlyBudget = 0;
+            }
+            catch (JsonException ex) 
+            {
+                MessageBox.Show($"Failed to parse the file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                transactions = new List<Transaction>();
+                userBudget.MonthlyBudget = 0;
             }
         }
 
@@ -215,6 +283,49 @@ namespace Personal_Finance_Tracker
         private void chkSortAscending_CheckedChanged(object sender, EventArgs e)
         {
             ApplyFiltersAndSortWithCurrentSettings();
+        }
+
+        private void btnSaveAs_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog()) 
+            {
+                saveFileDialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                saveFileDialog.Title = "Save Transactions File";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = saveFileDialog.FileName;
+                    SaveTransactions(filePath);
+                    UpdateFormTitle(filePath);
+                }
+            }
+        }
+
+        private void btnOpenFile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                openFileDialog.Title = "Open Transactions File";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+                    LoadTransactions(filePath);
+                    RefreshDataGrid();
+                    UpdateSummary();
+                }
+            }
+        }
+
+        private void btnSetBudget_Click(object sender, EventArgs e)
+        {
+            frmSetBudget frmSetBudget = new frmSetBudget(userBudget.MonthlyBudget);
+            if (frmSetBudget.ShowDialog() == DialogResult.OK)
+            {
+                userBudget.MonthlyBudget = frmSetBudget.NewBudget;
+                UpdateSummary();
+            }
         }
     }
 }
