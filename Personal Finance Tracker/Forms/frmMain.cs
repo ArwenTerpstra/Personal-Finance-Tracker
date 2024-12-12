@@ -96,9 +96,9 @@ namespace Personal_Finance_Tracker
             }
         }
 
-        private void ApplyFilters()
+        private void ApplyFiltersAndSort(string sortBy = "Date", bool ascending = true)
         {
-            var filteredTransactions = transactions;
+            List<Transaction> filteredTransactions = transactions;
 
             if (dtpFromDate.Value <= dtpToDate.Value)
             {
@@ -127,8 +127,38 @@ namespace Personal_Finance_Tracker
                     .ToList();
             }
 
+            switch (sortBy)
+            {
+                case "Date":
+                    filteredTransactions = ascending
+                        ? filteredTransactions.OrderBy(t => t.Date).ToList()
+                        : filteredTransactions.OrderByDescending(t => t.Date).ToList();
+                    break;
+
+                case "Amount":
+                    filteredTransactions = ascending
+                        ? filteredTransactions.OrderBy(t => t.Amount).ToList()
+                        : filteredTransactions.OrderByDescending(t => t.Amount).ToList();
+                    break;
+                case "Category":
+                    filteredTransactions = ascending
+                        ? filteredTransactions.OrderBy(t => t.Category).ToList()
+                        : filteredTransactions.OrderByDescending(t => t.Category).ToList();
+                    break;
+            }
+
             dgvTransactions.DataSource = null;
             dgvTransactions.DataSource = filteredTransactions;
+        }
+        private void ApplyFiltersAndSortWithCurrentSettings()
+        {
+            string sortBy = cbxSortBy.SelectedItem?.ToString() ?? string.Empty;
+            bool ascending = chkSortAscending.Checked;
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                ApplyFiltersAndSort(sortBy, ascending);
+            }
         }
 
         private void chbShowIncomeOnly_CheckedChanged(object sender, System.EventArgs e)
@@ -137,7 +167,7 @@ namespace Personal_Finance_Tracker
             {
                 chbShowExpensesOnly.Checked = false;
             }
-            ApplyFilters();
+            ApplyFiltersAndSortWithCurrentSettings();
         }
         private void chbShowExpensesOnly_CheckedChanged(object sender, EventArgs e)
         {
@@ -145,22 +175,22 @@ namespace Personal_Finance_Tracker
             {
                 chbShowIncomeOnly.Checked = false;
             }
-            ApplyFilters();
+            ApplyFiltersAndSortWithCurrentSettings();
         }
 
         private void cbxFilterCategory_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            ApplyFilters();
+            ApplyFiltersAndSortWithCurrentSettings();
         }
 
         private void dtpFromDate_ValueChanged(object sender, System.EventArgs e)
         {
-            ApplyFilters();
+            ApplyFiltersAndSortWithCurrentSettings();
         }
 
         private void dtpToDate_ValueChanged(object sender, System.EventArgs e)
         {
-            ApplyFilters();
+            ApplyFiltersAndSortWithCurrentSettings();
         }
 
         private void btnResetFilters_Click(object sender, System.EventArgs e)
@@ -170,7 +200,21 @@ namespace Personal_Finance_Tracker
             cbxFilterCategory.SelectedIndex = 0;
             chbShowIncomeOnly.Checked = false;
             chbShowExpensesOnly.Checked = false;
-            ApplyFilters();
+
+            cbxSortBy.SelectedIndex = 0;
+            chkSortAscending.Checked = false;
+
+            ApplyFiltersAndSortWithCurrentSettings();
+        }
+
+        private void cbxSortBy_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyFiltersAndSortWithCurrentSettings();
+        }
+
+        private void chkSortAscending_CheckedChanged(object sender, EventArgs e)
+        {
+            ApplyFiltersAndSortWithCurrentSettings();
         }
     }
 }

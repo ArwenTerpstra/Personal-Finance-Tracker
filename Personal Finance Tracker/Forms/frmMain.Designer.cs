@@ -36,17 +36,19 @@
             this.lblTotalExpenses = new System.Windows.Forms.Label();
             this.lblBalance = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.chbShowExpensesOnly = new System.Windows.Forms.CheckBox();
+            this.btnResetFilters = new System.Windows.Forms.Button();
             this.chbShowIncomeOnly = new System.Windows.Forms.CheckBox();
             this.cbxFilterCategory = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dtpToDate = new System.Windows.Forms.DateTimePicker();
             this.dtpFromDate = new System.Windows.Forms.DateTimePicker();
-            this.btnResetFilters = new System.Windows.Forms.Button();
-            this.chbShowExpensesOnly = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.cbxSortBy = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.chkSortAscending = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTransactions)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -109,7 +111,7 @@
             // lblBalance
             // 
             this.lblBalance.AutoSize = true;
-            this.lblBalance.Location = new System.Drawing.Point(6, 73);
+            this.lblBalance.Location = new System.Drawing.Point(6, 101);
             this.lblBalance.Name = "lblBalance";
             this.lblBalance.Size = new System.Drawing.Size(64, 13);
             this.lblBalance.TabIndex = 6;
@@ -132,6 +134,36 @@
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Filter";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 74);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(49, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Category";
+            // 
+            // chbShowExpensesOnly
+            // 
+            this.chbShowExpensesOnly.AutoSize = true;
+            this.chbShowExpensesOnly.Location = new System.Drawing.Point(121, 118);
+            this.chbShowExpensesOnly.Name = "chbShowExpensesOnly";
+            this.chbShowExpensesOnly.Size = new System.Drawing.Size(96, 17);
+            this.chbShowExpensesOnly.TabIndex = 7;
+            this.chbShowExpensesOnly.Text = "Expenses Only";
+            this.chbShowExpensesOnly.UseVisualStyleBackColor = true;
+            this.chbShowExpensesOnly.CheckedChanged += new System.EventHandler(this.chbShowExpensesOnly_CheckedChanged);
+            // 
+            // btnResetFilters
+            // 
+            this.btnResetFilters.Location = new System.Drawing.Point(63, 183);
+            this.btnResetFilters.Name = "btnResetFilters";
+            this.btnResetFilters.Size = new System.Drawing.Size(121, 23);
+            this.btnResetFilters.TabIndex = 6;
+            this.btnResetFilters.Text = "Reset";
+            this.btnResetFilters.UseVisualStyleBackColor = true;
+            this.btnResetFilters.Click += new System.EventHandler(this.btnResetFilters_Click);
             // 
             // chbShowIncomeOnly
             // 
@@ -200,45 +232,6 @@
             this.dtpFromDate.TabIndex = 0;
             this.dtpFromDate.ValueChanged += new System.EventHandler(this.dtpFromDate_ValueChanged);
             // 
-            // btnResetFilters
-            // 
-            this.btnResetFilters.Location = new System.Drawing.Point(63, 183);
-            this.btnResetFilters.Name = "btnResetFilters";
-            this.btnResetFilters.Size = new System.Drawing.Size(121, 23);
-            this.btnResetFilters.TabIndex = 6;
-            this.btnResetFilters.Text = "Reset";
-            this.btnResetFilters.UseVisualStyleBackColor = true;
-            this.btnResetFilters.Click += new System.EventHandler(this.btnResetFilters_Click);
-            // 
-            // chbShowExpensesOnly
-            // 
-            this.chbShowExpensesOnly.AutoSize = true;
-            this.chbShowExpensesOnly.Location = new System.Drawing.Point(121, 118);
-            this.chbShowExpensesOnly.Name = "chbShowExpensesOnly";
-            this.chbShowExpensesOnly.Size = new System.Drawing.Size(96, 17);
-            this.chbShowExpensesOnly.TabIndex = 7;
-            this.chbShowExpensesOnly.Text = "Expenses Only";
-            this.chbShowExpensesOnly.UseVisualStyleBackColor = true;
-            this.chbShowExpensesOnly.CheckedChanged += new System.EventHandler(this.chbShowExpensesOnly_CheckedChanged);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Location = new System.Drawing.Point(376, 449);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(179, 207);
-            this.groupBox2.TabIndex = 8;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sort";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 74);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(49, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Category";
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.lblBalance);
@@ -251,13 +244,49 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Total";
             // 
+            // cbxSortBy
+            // 
+            this.cbxSortBy.FormattingEnabled = true;
+            this.cbxSortBy.Items.AddRange(new object[] {
+            "None",
+            "Amount",
+            "Category",
+            "Date"});
+            this.cbxSortBy.Location = new System.Drawing.Point(375, 475);
+            this.cbxSortBy.Name = "cbxSortBy";
+            this.cbxSortBy.Size = new System.Drawing.Size(167, 21);
+            this.cbxSortBy.TabIndex = 0;
+            this.cbxSortBy.SelectedIndexChanged += new System.EventHandler(this.cbxSortBy_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(375, 459);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Sort by";
+            // 
+            // chkSortAscending
+            // 
+            this.chkSortAscending.AutoSize = true;
+            this.chkSortAscending.Location = new System.Drawing.Point(375, 502);
+            this.chkSortAscending.Name = "chkSortAscending";
+            this.chkSortAscending.Size = new System.Drawing.Size(76, 17);
+            this.chkSortAscending.TabIndex = 9;
+            this.chkSortAscending.Text = "Ascending";
+            this.chkSortAscending.UseVisualStyleBackColor = true;
+            this.chkSortAscending.CheckedChanged += new System.EventHandler(this.chkSortAscending_CheckedChanged);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(566, 668);
+            this.Controls.Add(this.chkSortAscending);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.cbxSortBy);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnLoadData);
             this.Controls.Add(this.btnSaveData);
@@ -272,6 +301,7 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -293,9 +323,11 @@
         private System.Windows.Forms.CheckBox chbShowIncomeOnly;
         private System.Windows.Forms.CheckBox chbShowExpensesOnly;
         private System.Windows.Forms.Button btnResetFilters;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.ComboBox cbxSortBy;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox chkSortAscending;
     }
 }
 
