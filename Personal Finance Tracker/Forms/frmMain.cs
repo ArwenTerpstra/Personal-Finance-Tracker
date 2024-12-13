@@ -13,7 +13,8 @@ namespace Personal_Finance_Tracker
     public partial class frmMain : Form
     {
         private List<Transaction> transactions = new List<Transaction>();
-        private Budget userBudget = new Budget { MonthlyBudget = 0, CurrentExpenses = 0 };
+        private readonly Budget userBudget = new Budget { MonthlyBudget = 0, CurrentExpenses = 0 };
+        private bool isDataModified = false;
 
         public frmMain()
         {
@@ -41,6 +42,7 @@ namespace Personal_Finance_Tracker
                 transactions.Add(frmAddTransaction.NewTransaction);
                 RefreshDataGrid();
                 UpdateSummary();
+                isDataModified = true;
             }
         }
 
@@ -106,25 +108,6 @@ namespace Personal_Finance_Tracker
         private void UpdateFormTitle(string filePath)
         {
             this.Text = $"Personal Finance Tracker - {Path.GetFileName(filePath)}";
-        }
-
-        private void SaveTransactions(string filePath)
-        {
-            try
-            {
-                var saveData = new { Transactions = transactions, Budget = userBudget.MonthlyBudget };
-                string json = JsonSerializer.Serialize(saveData, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
-
-                Properties.Settings.Default.LastUsedFilePath = filePath;
-                Properties.Settings.Default.Save();
-
-                MessageBox.Show("Data saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show($"Failed to save transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void LoadTransactions(string filePath) 
@@ -285,18 +268,109 @@ namespace Personal_Finance_Tracker
             ApplyFiltersAndSortWithCurrentSettings();
         }
 
+        private void ExportToJson(string filePath)
+        {
+            try
+            {
+                var saveData = new { Transactions = transactions, Budget = userBudget.MonthlyBudget };
+                string json = JsonSerializer.Serialize(saveData, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+
+                Properties.Settings.Default.LastUsedFilePath = filePath;
+                Properties.Settings.Default.Save();
+
+                MessageBox.Show("Data exported to JSON successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"Failed to save transactions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportToCsv(string filePath)
+        {
+            try 
+            {
+                var csvLines = new List<string>
+                {
+                    "Date,Description,Amount,Category,IsIncome"
+                };
+
+                csvLines.AddRange(transactions.Select(t => $"{t.Date:yyyy-MM-dd},{t.Description},{t.Amount},{t.Category},{t.IsIncome}"));
+
+                File.WriteAllLines(filePath, csvLines);
+
+                Properties.Settings.Default.LastUsedFilePath = filePath;
+                Properties.Settings.Default.Save();
+
+                MessageBox.Show("Data exported to CSV successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"Failed to export data to CSV: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExportToXls(string filePath)
+        {
+            try
+            {
+                using (var writer = new StreamWriter(filePath))
+                {
+                    writer.WriteLine("Date\tDescription\tAmount\tCategory\tIsIncome");
+
+                    foreach (var transaction in transactions)
+                    {
+                        writer.WriteLine(
+                            $"{transaction.Date:yyyy-MM-dd}\t" +
+                            $"{transaction.Description}\t" +
+                            $"{transaction.Amount}\t" +
+                            $"{transaction.Category}\t" +
+                            $"{transaction.IsIncome}");
+                    }
+                }
+
+                Properties.Settings.Default.LastUsedFilePath = filePath;
+                Properties.Settings.Default.Save();
+
+                MessageBox.Show("Data exported to XLS successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"Failed to export data to XLS: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void btnSaveAs_Click(object sender, EventArgs e)
         {
             using (SaveFileDialog saveFileDialog = new SaveFileDialog()) 
             {
-                saveFileDialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
-                saveFileDialog.Title = "Save Transactions File";
+                saveFileDialog.Filter = "CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|Excel Files (*.xls)|*.xls";
+                saveFileDialog.DefaultExt = "json";
+                saveFileDialog.Title = "Save Data As";
 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     string filePath = saveFileDialog.FileName;
-                    SaveTransactions(filePath);
-                    UpdateFormTitle(filePath);
+                    string extension = Path.GetExtension(filePath).ToLower();
+
+                    switch (extension)
+                    {
+                        case ".json":
+                            ExportToJson(filePath);
+                            break;
+                        case ".csv":
+                            ExportToCsv(filePath);
+                            break;
+                        case ".xls":
+                            ExportToXls(filePath);
+                            break;
+                        default:
+                            MessageBox.Show("Unsupported file format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+                    }
+
+                    isDataModified = false;
                 }
             }
         }
@@ -312,6 +386,7 @@ namespace Personal_Finance_Tracker
                 {
                     string filePath = openFileDialog.FileName;
                     LoadTransactions(filePath);
+                    UpdateFormTitle(filePath);
                     RefreshDataGrid();
                     UpdateSummary();
                 }
@@ -324,7 +399,21 @@ namespace Personal_Finance_Tracker
             if (frmSetBudget.ShowDialog() == DialogResult.OK)
             {
                 userBudget.MonthlyBudget = frmSetBudget.NewBudget;
+                isDataModified = true;
                 UpdateSummary();
+            }
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (isDataModified)
+            {
+                var result = MessageBox.Show("You have unsaved changes. Do you want to exit without saving?", "Unsaved Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
             }
         }
     }
