@@ -52,6 +52,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.btnSetBudget = new System.Windows.Forms.Button();
             this.lblBudgetStatus = new System.Windows.Forms.Label();
+            this.btnRemoveTransaction = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvTransactions)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -64,6 +65,8 @@
             this.dgvTransactions.Name = "dgvTransactions";
             this.dgvTransactions.Size = new System.Drawing.Size(542, 426);
             this.dgvTransactions.TabIndex = 0;
+            this.dgvTransactions.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvTransactions_CellValidating);
+            this.dgvTransactions.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTransactions_CellValueChanged);
             // 
             // btnAddTransaction
             // 
@@ -116,7 +119,7 @@
             // lblBalance
             // 
             this.lblBalance.AutoSize = true;
-            this.lblBalance.Location = new System.Drawing.Point(6, 96);
+            this.lblBalance.Location = new System.Drawing.Point(6, 62);
             this.lblBalance.Name = "lblBalance";
             this.lblBalance.Size = new System.Drawing.Size(64, 13);
             this.lblBalance.TabIndex = 6;
@@ -242,9 +245,9 @@
             this.groupBox3.Controls.Add(this.lblBalance);
             this.groupBox3.Controls.Add(this.lblTotalExpenses);
             this.groupBox3.Controls.Add(this.lblTotalIncome);
-            this.groupBox3.Location = new System.Drawing.Point(12, 531);
+            this.groupBox3.Location = new System.Drawing.Point(12, 562);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(99, 119);
+            this.groupBox3.Size = new System.Drawing.Size(99, 88);
             this.groupBox3.TabIndex = 9;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Total";
@@ -307,11 +310,23 @@
             this.lblBudgetStatus.TabIndex = 10;
             this.lblBudgetStatus.Text = "Budget Status";
             // 
+            // btnRemoveTransaction
+            // 
+            this.btnRemoveTransaction.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRemoveTransaction.Location = new System.Drawing.Point(12, 531);
+            this.btnRemoveTransaction.Name = "btnRemoveTransaction";
+            this.btnRemoveTransaction.Size = new System.Drawing.Size(99, 23);
+            this.btnRemoveTransaction.TabIndex = 12;
+            this.btnRemoveTransaction.Text = "Remove Transaction";
+            this.btnRemoveTransaction.UseVisualStyleBackColor = true;
+            this.btnRemoveTransaction.Click += new System.EventHandler(this.btnRemoveTransaction_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(566, 668);
+            this.Controls.Add(this.btnRemoveTransaction);
             this.Controls.Add(this.lblBudgetStatus);
             this.Controls.Add(this.btnSetBudget);
             this.Controls.Add(this.chkSortAscending);
@@ -323,6 +338,9 @@
             this.Controls.Add(this.btnSaveAs);
             this.Controls.Add(this.btnAddTransaction);
             this.Controls.Add(this.dgvTransactions);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmMain";
             this.Text = "Personal Finance Tracker";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
@@ -363,6 +381,7 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button btnSetBudget;
         private System.Windows.Forms.Label lblBudgetStatus;
+        private System.Windows.Forms.Button btnRemoveTransaction;
     }
 }
 

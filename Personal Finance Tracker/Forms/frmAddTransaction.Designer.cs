@@ -156,6 +156,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbxDescription);
             this.Controls.Add(this.btnSubmit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmAddTransaction";
             this.Text = "Add Transaction";
             ((System.ComponentModel.ISupportInitialize)(this.nudAmount)).EndInit();

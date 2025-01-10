@@ -35,7 +35,7 @@
             // 
             // nudBudget
             // 
-            this.nudBudget.Location = new System.Drawing.Point(12, 12);
+            this.nudBudget.Location = new System.Drawing.Point(54, 24);
             this.nudBudget.Maximum = new decimal(new int[] {
             999999999,
             0,
@@ -47,7 +47,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(12, 38);
+            this.btnSave.Location = new System.Drawing.Point(54, 50);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(120, 23);
             this.btnSave.TabIndex = 1;
@@ -59,11 +59,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(144, 75);
+            this.ClientSize = new System.Drawing.Size(224, 94);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.nudBudget);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmSetBudget";
-            this.Text = "frmSetBudget";
+            this.Text = "Set Budget";
             ((System.ComponentModel.ISupportInitialize)(this.nudBudget)).EndInit();
             this.ResumeLayout(false);
 

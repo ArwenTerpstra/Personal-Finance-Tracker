@@ -32,6 +32,8 @@ namespace Personal_Finance_Tracker
 
             RefreshDataGrid();
             UpdateSummary();
+
+            dgvTransactions.Columns["IsIncome"].ReadOnly = true;
         }
 
         private void btnAddTransaction_Click(object sender, System.EventArgs e)
@@ -110,7 +112,7 @@ namespace Personal_Finance_Tracker
             this.Text = $"Personal Finance Tracker - {Path.GetFileName(filePath)}";
         }
 
-        private void LoadTransactions(string filePath) 
+        private void LoadTransactions(string filePath)
         {
             try
             {
@@ -139,7 +141,7 @@ namespace Personal_Finance_Tracker
                 transactions = new List<Transaction>();
                 userBudget.MonthlyBudget = 0;
             }
-            catch (JsonException ex) 
+            catch (JsonException ex)
             {
                 MessageBox.Show($"Failed to parse the file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 transactions = new List<Transaction>();
@@ -166,7 +168,7 @@ namespace Personal_Finance_Tracker
             }
 
             if (chbShowIncomeOnly.Checked)
-            { 
+            {
                 filteredTransactions = filteredTransactions
                     .Where(t => t.IsIncome)
                     .ToList();
@@ -289,7 +291,7 @@ namespace Personal_Finance_Tracker
 
         private void ExportToCsv(string filePath)
         {
-            try 
+            try
             {
                 var csvLines = new List<string>
                 {
@@ -343,7 +345,7 @@ namespace Personal_Finance_Tracker
 
         private void btnSaveAs_Click(object sender, EventArgs e)
         {
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog()) 
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Filter = "CSV Files (*.csv)|*.csv|JSON Files (*.json)|*.json|Excel Files (*.xls)|*.xls";
                 saveFileDialog.DefaultExt = "json";
@@ -414,6 +416,107 @@ namespace Personal_Finance_Tracker
                 {
                     e.Cancel = true;
                 }
+            }
+        }
+
+        private void dgvTransactions_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            string headerText = dgvTransactions.Columns[e.ColumnIndex].HeaderText;
+
+            if (headerText == "IsIncome")
+                return;
+
+            string cellValue = e.FormattedValue.ToString();
+
+            if (string.IsNullOrWhiteSpace(cellValue))
+            {
+                MessageBox.Show(
+                    $"The field '{headerText}' cannot be empty.",
+                    "Invalid Input",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                e.Cancel = true;
+                return;
+            }
+
+            if (headerText == "Category")
+            {
+                var validCategories = new List<string> { "Income", "Housing", "Food", "Utilities", "Fitness", "Entertainment", "Savings", "Transportation", "Investment", "Education" };
+
+                if (!validCategories.Contains(cellValue))
+                {
+                    MessageBox.Show(
+                        $"Invalid category '{cellValue}'. Please select a valid category.",
+                        "Invalid Input",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
+            if (headerText == "Date")
+            {
+                if (!DateTime.TryParse(cellValue, out _))
+                {
+                    MessageBox.Show(
+                        $"Invalid date format. Please enter a valid date.",
+                        "Invalid Input",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
+            if (headerText == "Amount")
+            {
+                if (!decimal.TryParse(cellValue, out decimal amount) || amount < 0)
+                {
+                    MessageBox.Show(
+                        $"Invalid amount. Please enter a non-negative number.",
+                        "Invalid Input",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                    e.Cancel = true;
+                    return;
+
+                }
+            }
+        }
+
+        private void dgvTransactions_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            isDataModified = true;
+        }
+
+        private void btnRemoveTransaction_Click(object sender, EventArgs e)
+        {
+            if (dgvTransactions.CurrentRow == null || dgvTransactions.CurrentRow.Index < 0)
+            {
+                MessageBox.Show("Please select a transaction to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int rowIndex = dgvTransactions.CurrentRow.Index;
+
+            string description = dgvTransactions.Rows[rowIndex].Cells["Description"].Value?.ToString() ?? "Unknown";
+
+            DialogResult result = MessageBox.Show(
+                $"Are you sure you want to delete the transaction: \"{description}\"?",
+                "Confirm Deletion",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                transactions.RemoveAt(rowIndex);
+
+                RefreshDataGrid();
+
+                isDataModified = true;
+
+                MessageBox.Show("Transaction removed successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }
